@@ -262,6 +262,11 @@ void startSerial(SoftwareSerial& bluetooth){
           sw++;
         }
       }
+
+      // 
+      if(command.substring(0, 7) == "OK+CONN"){
+        Serial.println("command.substring0-7 " + command.substring(0, 7));
+      }
       first--;
       second--;
       Serial.println("command = " + command);
