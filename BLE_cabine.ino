@@ -1,6 +1,10 @@
 
 
 #include <SoftwareSerial.h>   //Software Serial Port
+
+
+    #define VERSION v1.0
+    
    // #define ADDRESS 0x640101ff   // ID лифта
     #define LED 13   // светодиод arduino
     #define SEC 1000   // секунда
@@ -9,6 +13,11 @@
     #define WAIT_RESPONSE 1500  // Время ответа от модуля в миллисекундах
     #define BLE_TX 13
     #define BLE_RX 12
+
+    #define close_pin 0
+    #define open_pin 0
+    #define cancel_pin 0
+    #define call_pin 0
  
 
 //  ПЕРЕМЕННЫЕ НАСТРАИВАЕМЫЕ ИНДИВИДУАЛЬНО  ////////////////////////////////////////////
@@ -17,7 +26,7 @@
     const byte max_floors = 10;
 
     // Пины на которые подключны реле
-    byte button_pins[max_floors] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    const byte button_pins[max_floors] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
     
 
 
@@ -82,7 +91,7 @@ void startSerial(SoftwareSerial& bluetooth){
     {
       Serial.begin(9600);
       BLE.begin(9600);
-
+      
       //delete in release (it's for imitation)
       pinMode(4, INPUT);
       // 
@@ -292,6 +301,13 @@ void startSerial(SoftwareSerial& bluetooth){
         }
        } else if (command == "lift"){
         lift(first);
+       } else if (command == "extrabuttons"){
+        byte extr = 0;
+        if(close_pin > 0) extr += 1;
+        if(open_pin > 0) extr += 2;
+        if(cancel_pin > 0) extr += 4;
+        if(call_pin > 0) extr += 8;
+        serial.print(extr);
        }
     }
 
