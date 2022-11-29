@@ -18,6 +18,7 @@
     #define open_pin 0
     #define cancel_pin 0
     #define call_pin 0
+
  
 
 //  ПЕРЕМЕННЫЕ НАСТРАИВАЕМЫЕ ИНДИВИДУАЛЬНО  ////////////////////////////////////////////
@@ -27,6 +28,7 @@
 
     // Пины на которые подключны реле
     const byte button_pins[max_floors] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    const byte extra_button_pins[4] = {close_pin, open_pin, cancel_pin, call_pin};
     
 
 
@@ -49,10 +51,10 @@ int but = 0;
     unsigned long response_times;
     
     // Время сколько включена реле
-    unsigned long times[max_floors];
+    unsigned long times[max_floors + 4];
     
     // Состояние включенных реле
-    bool state_switch[max_floors];
+    bool state_switch[max_floors + 4];
     
     
     // Этаж на котором находится лифт в настоящее время
@@ -107,15 +109,28 @@ void startSerial(SoftwareSerial& bluetooth){
        
       dataBLE = "";
       queue = "";
-      
 
-      for(int i = 0; i < max_floors; i++){
-        for(auto& it : stack[i]){
-          it = false;
+      // очищаем таблицу отложенных вызовов
+      for(auto& i : stack){
+        for(bool& j : i){
+          j = false;
         }
-        times[i] = 0;
-        state_switch[i] = false;
-        pinMode(button_pins[i], OUTPUT);
+      }
+      // обнуляем таблицу состояний кнопок
+      for(bool& i : state_switch){
+        i = false;
+      }
+      // обнуляем таблицу таймеров активации кнопок
+      for(unsigned long& i : times){
+        i = 0;
+      }
+      // переводим пины кнопок в режим выхода
+      for(const byte& i : button_pins){
+        pinMode(i, OUTPUT);
+      }
+      // переводим пины дополнительных кнопок в режим выхода
+      for(const byte& i : extra_button_pins){
+        pinMode(i, OUTPUT);
       }
       
 //      pinMode(LED, OUTPUT);
@@ -138,7 +153,7 @@ void startSerial(SoftwareSerial& bluetooth){
 //        getCurrentFloor();
 
         // Проверяем какие кнопки нажаты слишком долго
-        for(int i = 0; i < max_floors; i++){
+        for(int i = 0; i < max_floors + 4; i++){
           if(times[i] != 0){
             if(abs(millis() - times[i]) > DELAY_SEC){
               times[i] = 0;
@@ -152,12 +167,12 @@ void startSerial(SoftwareSerial& bluetooth){
         readData(BLE, dataBLE);
 
         // Запускаем отложенные вызовы текущего этажа
-        for(int i = 0; i < max_floors; i++){
-          if(stack[current_floor][i]){
-            lift(i);
-            stack[current_floor][i] = false;
-          }
-        }
+//        for(int i = 0; i < max_floors; i++){
+//          if(stack[current_floor][i]){
+//            lift(i);
+//            stack[current_floor][i] = false;
+//          }
+//        }
         
         // Читаем данные с компьютера
         while(Serial.available()){//check if there's any data sent from the local serial terminal, you can add the other applications here
@@ -303,11 +318,16 @@ void startSerial(SoftwareSerial& bluetooth){
         lift(first);
        } else if (command == "extrabuttons"){
         byte extr = 0;
-        if(close_pin > 0) extr += 1;
-        if(open_pin > 0) extr += 2;
-        if(cancel_pin > 0) extr += 4;
-        if(call_pin > 0) extr += 8;
+        if(extra_button_pins[0] > 0) extr += 1; // close
+        if(extra_button_pins[1] > 0) extr += 2; // open
+        if(extra_button_pins[2] > 0) extr += 4; // cancel
+        if(extra_button_pins[3] > 0) extr += 8; // call
         serial.print(extr);
+       } else if (command == "pushbutton"){
+        digitalWrite(extra_button_pins[first - 1], HIGH);
+        times[max_floors + first - 1] = millis();
+        if(times[max_floors + first - 1] == 0) times[max_floors + first - 1]++;
+        state_switch[max_floors + first - 1] = true;
        }
     }
 
