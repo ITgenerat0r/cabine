@@ -316,14 +316,14 @@ void startSerial(SoftwareSerial& bluetooth){
         }
        } else if (command == "lift"){
         lift(first);
-       } else if (command == "extrabuttons"){
+       } else if (command == "gExtBtns"){
         byte extr = 0;
         if(extra_button_pins[0] > 0) extr += 1; // close
         if(extra_button_pins[1] > 0) extr += 2; // open
         if(extra_button_pins[2] > 0) extr += 4; // cancel
         if(extra_button_pins[3] > 0) extr += 8; // call
         serial.print(extr);
-       } else if (command == "pushbutton"){
+       } else if (command == "pExtBtn"){
         digitalWrite(extra_button_pins[first - 1], HIGH);
         times[max_floors + first - 1] = millis();
         if(times[max_floors + first - 1] == 0) times[max_floors + first - 1]++;
