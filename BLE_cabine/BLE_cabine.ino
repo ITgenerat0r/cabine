@@ -11,8 +11,8 @@
     #define DELAY_SEC SEC * 3 // Задержка в секундах для реле кнопок
     #define DEBUG_ENABLED  1   // debug (on/off)
     #define WAIT_RESPONSE 1500  // Время ответа от модуля в миллисекундах
-    #define BLE_TX 13
-    #define BLE_RX 12
+    #define BLE_TX 12
+    #define BLE_RX 13
 
     #define close_pin 0
     #define open_pin 0

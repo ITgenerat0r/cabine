@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
-#define RX_BLE_PIN 12
-#define TX_BLE_PIN 13
+#define RX_BLE_PIN 13
+#define TX_BLE_PIN 12
 
 SoftwareSerial ble(RX_BLE_PIN, TX_BLE_PIN);
 
@@ -33,7 +33,7 @@ void loop() {
           } else {
             if(dataSerial.length() > 1 && dataSerial[0] == '/'){
               dataSerial.remove(0, 1);
-              dataSerial = "at+" + dataSerial;
+              dataSerial = "AT+" + dataSerial;
             }
 //            dataSerial += "\r\n";
             Serial.println("");
