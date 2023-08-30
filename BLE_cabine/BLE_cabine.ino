@@ -191,7 +191,7 @@ void startSerial(SoftwareSerial& bluetooth){
             }
             if(dataSerial.length() > 1 && dataSerial[0] == '/'){
               dataSerial.remove(0, 1);
-              dataSerial = "at+" + dataSerial;
+              dataSerial = "AT+" + dataSerial;
             }
             dataSerial += "\r\n";
             Serial.print("Send to ");
