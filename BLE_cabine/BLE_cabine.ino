@@ -370,9 +370,7 @@ void startSerial(SoftwareSerial& bluetooth){
 
     // Активация кнопки кабины
     void lift(byte fl){
-      Serial.print("Button cabine is ON (");
-      Serial.print(fl);
-      Serial.println(")");
+      Serial.print("Button cabine is ON (");Serial.print(fl);Serial.println(")");
       if(fl < 0 || fl >= max_floors) return;
       digitalWrite(button_pins[fl], HIGH);
       state_switch[fl] = true;
